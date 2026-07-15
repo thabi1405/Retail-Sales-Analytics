@@ -102,3 +102,50 @@ plt.tight_layout()
 
 plt.savefig("outputs/charts/profit_by_subcategory.png")
 plt.close()
+
+# ======================================
+# BUSINESS QUESTION 3
+# Which month generates the highest sales and profit?
+# ======================================
+
+monthly_summary = (
+    df.groupby("Month Name")[["Sales", "Profit"]]
+      .sum()
+)
+
+# Put the months in calendar order
+month_order = [
+    "January", "February", "March", "April",
+    "May", "June", "July", "August",
+    "September", "October", "November", "December"
+]
+
+monthly_summary = monthly_summary.reindex(month_order)
+
+print("\n===== SALES & PROFIT BY MONTH =====")
+print(monthly_summary.round(2))
+
+# ======================================
+# CHART 3
+# Monthly Sales Trend
+# ======================================
+
+monthly_summary["Sales"].plot(
+    kind="line",
+    figsize=(12, 6),
+    marker="o",
+    linewidth=3,
+    title="Monthly Sales Trend"
+)
+
+plt.xlabel("Month")
+plt.ylabel("Sales")
+plt.xticks(rotation=45)
+plt.grid(True)
+
+plt.tight_layout()
+
+plt.savefig("outputs/charts/monthly_sales_trend.png")
+plt.close()
+
+print("\n✓ Monthly sales chart saved!")
