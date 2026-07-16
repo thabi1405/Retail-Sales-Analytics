@@ -20,7 +20,7 @@ This project analyzes Superstore retail sales data to discover sales trends, pro
 
 # 📈 Dashboard
 
-(Add dashboard screenshot here)
+![Dashboard](images/dashboard.png)
 
 ---
 
