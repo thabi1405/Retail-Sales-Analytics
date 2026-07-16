@@ -4,15 +4,17 @@ import plotly.express as px
 
 from src.data_cleaning import load_and_clean_data
 
-# Page configuration
+# PAGE CONFIGURATION
+
 st.set_page_config(
     page_title="Retail Sales Analytics Dashboard",
+    page_icon="",
     layout="wide"
 )
-st.sidebar.title(" Retail Dashboard")
 
-st.sidebar.markdown("""
-### Dashboard Sections
+# SIDEBAR
+
+st.sidebar.title(" Retail Dashboard")
 
 st.sidebar.markdown("""
 ### Navigation
@@ -25,66 +27,125 @@ Developed by
 
 **Rethabile Mmako**
 """)
-# Title
+
+# TITLE
 
 st.title(" Retail Sales Analytics Dashboard")
 
 st.markdown("""
-This dashboard analyzes Superstore retail sales data to identify sales trends,
-customer behavior, profitability, and business insights.
+This dashboard analyzes Superstore retail sales data to identify:
+
+- Sales trends
+- Customer behavior
+- Product profitability
+- Regional performance
+- Business insights
 """)
 
-# Load data
+# LOAD DATA
+
 df = load_and_clean_data("data/samplesuperstore.csv")
 
-# Sidebar Filters
+# FILTERS
 
 st.sidebar.header("Filters")
 
 selected_region = st.sidebar.multiselect(
     "Select Region",
     options=sorted(df["Region"].unique()),
-    default=sorted(df["Region"].unique())
+    default=sorted(df["Region"].unique()),
+    key="region_filter"
 )
 
 selected_category = st.sidebar.multiselect(
     "Select Category",
     options=sorted(df["Category"].unique()),
-    default=sorted(df["Category"].unique())
+    default=sorted(df["Category"].unique()),
+    key="category_filter"
 )
 
 selected_segment = st.sidebar.multiselect(
     "Select Customer Segment",
     options=sorted(df["Segment"].unique()),
-    default=sorted(df["Segment"].unique())
+    default=sorted(df["Segment"].unique()),
+    key="segment_filter"
 )
 
 selected_year = st.sidebar.multiselect(
     "Select Year",
     options=sorted(df["Year"].unique()),
-    default=sorted(df["Year"].unique())
+    default=sorted(df["Year"].unique()),
+    key="year_filter"
 )
+
+# APPLY FILTERS
+
 df = df[
     (df["Region"].isin(selected_region)) &
     (df["Category"].isin(selected_category)) &
     (df["Segment"].isin(selected_segment)) &
     (df["Year"].isin(selected_year))
 ]
+
+# KPI CARDS
+
+st.subheader(" Executive Summary")
+
+col1, col2, col3 = st.columns(3)
+
+col1.metric(
+    " Total Sales",
+    f"${df['Sales'].sum():,.2f}"
+)
+
+col2.metric(
+    " Total Profit",
+    f"${df['Profit'].sum():,.2f}"
+)
+
+col3.metric(
+    " Total Orders",
+    f"{len(df):,}"
+)
+
+st.info(
+    f"""
+Average Order Value: ${df['Sales'].mean():,.2f}
+
+Average Profit per Order: ${df['Profit'].mean():,.2f}
+"""
+)
+
+st.caption(
+    f"Displaying {len(df):,} records based on the selected filters."
+)
+
+st.write("---")
+
+# DATASET PREVIEW
+
+with st.expander(" View Dataset Preview"):
+    st.dataframe(df.head())
+
+# DATA FOR VISUALIZATIONS
+
 monthly_sales = (
     df.groupby("Month Name")["Sales"]
-      .sum()
-      .reindex([
-          "January", "February", "March", "April",
-          "May", "June", "July", "August",
-          "September", "October", "November", "December"
-      ])
-      .reset_index()
+    .sum()
+    .reindex([
+        "January", "February", "March", "April",
+        "May", "June", "July", "August",
+        "September", "October", "November", "December"
+    ])
+    .reset_index()
 )
+
 category_profit = (
     df.groupby("Category")["Profit"]
     .sum()
     .reset_index()
 )
+
 subcategory_profit = (
     df.groupby("Sub-Category")["Profit"]
     .sum()
@@ -128,6 +189,8 @@ least_products = (
     .reset_index()
 )
 
+# PLOTLY CHARTS
+
 fig_monthly = px.line(
     monthly_sales,
     x="Month Name",
@@ -135,53 +198,43 @@ fig_monthly = px.line(
     title="Monthly Sales Trend",
     markers=True
 )
-fig_monthly.update_layout(
-    height=350,
-    title_x=0.5
-)
+fig_monthly.update_layout(height=350, title_x=0.5)
+
 fig_category = px.bar(
     category_profit,
     x="Category",
     y="Profit",
-    title="Profit by Category",
-    color="Category"
+    color="Category",
+    title="Profit by Category"
 )
-fig_category.update_layout(
-    height=350,
-    title_x=0.5
-)
+fig_category.update_layout(height=350, title_x=0.5)
+
 fig_subcategory = px.bar(
     subcategory_profit,
     x="Sub-Category",
     y="Profit",
     title="Profit by Sub-Category"
 )
-fig_subcategory.update_layout(
-    height=350,
-    title_x=0.5
-)
+fig_subcategory.update_layout(height=350, title_x=0.5)
+
 fig_region = px.bar(
     region_profit,
     x="Region",
     y="Profit",
-    title="Profit by Region",
-    color="Region"
+    color="Region",
+    title="Profit by Region"
 )
-fig_region.update_layout(
-    height=350,
-    title_x=0.5
-)
+fig_region.update_layout(height=350, title_x=0.5)
+
 fig_segment = px.bar(
     segment_profit,
     x="Segment",
     y="Profit",
-    title="Profit by Customer Segment",
-    color="Segment"
+    color="Segment",
+    title="Profit by Customer Segment"
 )
-fig_segment.update_layout(
-    height=350,
-    title_x=0.5
-)
+fig_segment.update_layout(height=350, title_x=0.5)
+
 fig_discount = px.scatter(
     df,
     x="Discount",
@@ -189,41 +242,32 @@ fig_discount = px.scatter(
     color="Category",
     title="Discount vs Profit"
 )
-fig_discount.update_layout(
-    height=350,
-    title_x=0.5
-)
+fig_discount.update_layout(height=350, title_x=0.5)
+
 fig_category_pie = px.pie(
     df,
     names="Category",
     values="Sales",
     title="Category Sales Contribution"
 )
-fig_category_pie.update_layout(
-    height=350,
-    title_x=0.5
-)
+fig_category_pie.update_layout(height=350, title_x=0.5)
+
 fig_customers = px.bar(
     top_customers,
     x="Customer Name",
     y="Sales",
     title="Top 10 Customers"
 )
-fig_customers.update_layout(
-    height=350,
-    title_x=0.5
-)
+fig_customers.update_layout(height=350, title_x=0.5)
+
 fig_top_products = px.bar(
     top_products,
     x="Profit",
     y="Product Name",
     orientation="h",
-    title="Top 10 Profitable Products"
+    title="Top 10 Most Profitable Products"
 )
-fig_top_products.update_layout(
-    height=350,
-    title_x=0.5
-)
+fig_top_products.update_layout(height=350, title_x=0.5)
 
 fig_least_products = px.bar(
     least_products,
@@ -232,46 +276,18 @@ fig_least_products = px.bar(
     orientation="h",
     title="Top 10 Least Profitable Products"
 )
-fig_least_products.update_layout(
-    height=350,
-    title_x=0.5
-)
-# KPI Cards
-st.subheader(" Executive Summary")
-col1, col2, col3 = st.columns(3)
-st.info(
-    f"""
-Average Order Value: ${df['Sales'].mean():,.2f}
+fig_least_products.update_layout(height=350, title_x=0.5)
 
-Average Profit per Order: ${df['Profit'].mean():,.2f}
-"""
-)
-st.caption(f"Displaying **{len(df):,}** records based on the selected filters.")
-col1.metric(
-    "Total Sales",
-    f"${df['Sales'].sum():,.0f}"
-)
-
-col2.metric(
-    " Total Profit",
-    f"${df['Profit'].sum():,.0f}"
-)
-
-col3.metric(
-    "Total Orders",
-    f"{len(df):,}"
-)
-
-st.write("---")
-
-with st.expander("📋 View Dataset Preview"):
-    st.dataframe(df.head())
+# DASHBOARD TABS
 
 tab1, tab2, tab3 = st.tabs([
     " Sales Analysis",
     " Customer Analysis",
     " Product Analysis"
 ])
+
+# SALES ANALYSIS
+
 with tab1:
 
     col1, col2 = st.columns(2)
@@ -285,6 +301,8 @@ with tab1:
         st.plotly_chart(fig_category, use_container_width=True)
         st.plotly_chart(fig_discount, use_container_width=True)
 
+# CUSTOMER ANALYSIS
+
 with tab2:
 
     col1, col2 = st.columns(2)
@@ -294,6 +312,8 @@ with tab2:
 
     with col2:
         st.plotly_chart(fig_customers, use_container_width=True)
+
+# PRODUCT ANALYSIS
 
 with tab3:
 
@@ -306,19 +326,26 @@ with tab3:
         st.plotly_chart(fig_top_products, use_container_width=True)
         st.plotly_chart(fig_least_products, use_container_width=True)
 
-    st.markdown("---")
+# BUSINESS INSIGHTS
 
-st.header("📌 Key Business Insights")
+st.markdown("---")
+
+st.header(" Key Business Insights")
 
 st.success("""
-• Technology is the most profitable category.
+**Key findings from the analysis:**
 
-• Furniture generates high sales but much lower profit.
-
-• Consumer customers contribute the highest sales.
-
-• November is the strongest sales month.
-
-• Discounts above 30% are frequently associated with losses.
+-  Technology is the most profitable category.
+-  Furniture generates high sales but relatively low profit.
+-  Consumer customers contribute the largest share of sales.
+-  November is the strongest sales month.
+-  Discounts above 30% are frequently associated with losses.
 """)
-            
+
+# FOOTER
+
+st.markdown("---")
+
+st.caption(
+    "Developed by **Rethabile Mmako** | BSc Mathematical Sciences (Computer Science & Statistics)"
+)
