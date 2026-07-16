@@ -50,6 +50,7 @@ for title, query in queries.items():
     print("=" * 50)
 
     result = pd.read_sql_query(query, conn)
-    print(result)
+    pd.set_option("display.float_format", "{:,.2f}".format)
+print(result)
 
 conn.close()

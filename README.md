@@ -6,6 +6,14 @@ This project analyzes Superstore retail sales data to discover sales trends, pro
 
 ---
 
+## 🌐 Live Demo
+
+https://retail-sales-analytics-tsvbqinwxo5i5lcqcyhpkn.streamlit.app/
+
+## 💻 GitHub Repository
+
+https://github.com/thabi1405/Retail-Sales-Analytics
+
 # 🚀 Features
 
 - Interactive Streamlit dashboard
@@ -17,22 +25,47 @@ This project analyzes Superstore retail sales data to discover sales trends, pro
 - Data cleaning with Pandas
 
 ---
+# 📊 Dashboard
 
-# 📈 Dashboard
+## Dashboard Overview
 
-![Dashboard](images/dashboard.png)
+![Dashboard Overview](images/dashboard.png)
+
+The dashboard provides:
+
+- Executive KPI cards
+- Interactive filters
+- Monthly sales trends
+- Profit analysis
+- Customer insights
 
 ---
 
-# Dashboard Sections
+## Interactive Analytics
 
-## 📊 Sales Analysis
+Users can filter the dashboard by:
 
-- Monthly Sales Trend
-- Profit by Category
-- Profit by Region
-- Category Sales Distribution
-- Discount vs Profit
+- Region
+- Category
+- Customer Segment
+- Year
+
+![Interactive Dashboard](images/filters.png)
+
+---
+
+## SQL Integration
+
+The project stores the cleaned data in SQLite and performs business analysis using SQL.
+
+Example SQL queries include:
+
+- Top profitable products
+- Average shipping time
+- Profit by region
+- Monthly sales
+
+![SQL Queries](images/sql.png)
 
 ## 👥 Customer Analysis
 
